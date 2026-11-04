@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Performance Analyzer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar"><div class="brand"><span class="logo">SP</span><span>Student<span class="muted">Pulse</span></span></div><span class="top-note">STUDENT PERFORMANCE ANALYZER</span></header>
+<main class="wrap">
+  <section class="hero">
+    <div><p class="eyebrow">LEARN SMARTER · GROW FASTER</p><h1>Understand your<br><span>academic progress.</span></h1>
+    <p class="sub">Enter your academic details and get a simple performance overview with practical suggestions.</p></div>
+    <div class="hero-icon">✦</div>
+  </section>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="POST" id="analyzerForm">
+    <section class="panel">
+      <div class="section-head"><div><span class="step">01</span><h2>Student details</h2></div><p>Tell us who we're analyzing</p></div>
+      <div class="two-col">
+        <label>Student name<input name="name" placeholder="e.g. Akriti Singh" required></label>
+        <label>Roll number / Student ID<input name="roll" placeholder="e.g. 23CS101" required></label>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="section-head"><div><span class="step">02</span><h2>Subject-wise marks</h2></div><p>Enter marks out of 100</p></div>
+      <div id="subjects">
+        <div class="subject-row"><input name="subject[]" placeholder="Subject name" required><input name="marks[]" type="number" min="0" max="100" step="0.1" placeholder="Marks / 100" required></div>
+        <div class="subject-row"><input name="subject[]" placeholder="Subject name" required><input name="marks[]" type="number" min="0" max="100" step="0.1" placeholder="Marks / 100" required></div>
+        <div class="subject-row"><input name="subject[]" placeholder="Subject name" required><input name="marks[]" type="number" min="0" max="100" step="0.1" placeholder="Marks / 100" required></div>
+      </div>
+      <button type="button" class="add-btn" onclick="addSubject()">＋ Add another subject</button>
+    </section>
+    <section class="panel">
+      <div class="section-head"><div><span class="step">03</span><h2>Learning habits</h2></div><p>Give your latest estimates</p></div>
+      <div class="three-col">
+        <label>Attendance (%)<input name="attendance" type="number" min="0" max="100" step="0.1" placeholder="e.g. 82" required></label>
+        <label>Assignments completed (%)<input name="assignment" type="number" min="0" max="100" step="0.1" placeholder="e.g. 90" required></label>
+        <label>Study hours per day<input name="study_hours" type="number" min="0" max="24" step="0.5" placeholder="e.g. 2.5" required></label>
+      </div>
+    </section>
+    <button class="analyze-btn" type="submit">Analyze my performance <span>→</span></button>
+  </form>
+  {% if result %}
+  <section class="results" id="results">
+    <div class="result-head"><div><p class="eyebrow">YOUR ANALYSIS</p><h2>Here's your performance, {{ result.name }}.</h2><p class="muted">Roll no: {{ result.roll }}</p></div><div class="grade">{{ result.grade }}<small>GRADE</small></div></div>
+    <div class="stats">
+      <div class="stat"><small>OVERALL AVERAGE</small><strong>{{ result.average }}<em>/100</em></strong><span>{{ result.performance }}</span></div>
+      <div class="stat"><small>ATTENDANCE</small><strong>{{ result.attendance }}<em>%</em></strong><span>Class participation</span></div>
+      <div class="stat"><small>ASSIGNMENTS</small><strong>{{ result.assignment }}<em>%</em></strong><span>Completion rate</span></div>
+    </div>
+    <div class="result-grid">
+      <div class="panel"><h3>Subject breakdown</h3>{% for s in result.subjects %}<div class="bar-line"><div><span>{{ s.subject }}</span><b>{{ s.marks }}%</b></div><div class="track"><i style="width:{{ s.marks }}%"></i></div></div>{% endfor %}</div>
+      <div class="panel"><h3>Quick insights</h3><div class="insight"><small>STRONGEST SUBJECT</small><b>{{ result.strongest.subject }} · {{ result.strongest.marks }}%</b></div><div class="insight"><small>NEEDS MORE FOCUS</small><b>{{ result.weakest.subject }} · {{ result.weakest.marks }}%</b></div><div class="insight"><small>DAILY STUDY TIME</small><b>{{ result.study_hours }} hours</b></div></div>
+    </div>
+    <div class="panel tips"><h3>Suggested next steps</h3><ul>{% for tip in result.tips %}<li>{{ tip }}</li>{% endfor %}</ul><p class="disclaimer">This is a basic learning-support tool, not an official college grade or evaluation.</p></div>
+    <button class="add-btn" onclick="window.print()">Print / Save report</button>
+  </section>
+  {% endif %}
+  <footer>StudentPulse · A simple academic self-assessment tool</footer>
+</main>
+<script>
+function addSubject(){
+ const row=document.createElement('div'); row.className='subject-row';
+ row.innerHTML='<input name="subject[]" placeholder="Subject name" required><input name="marks[]" type="number" min="0" max="100" step="0.1" placeholder="Marks / 100" required>';
+ document.getElementById('subjects').appendChild(row);
+}
+</script>
+</body></html>
